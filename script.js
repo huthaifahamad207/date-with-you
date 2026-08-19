@@ -32,10 +32,11 @@ items.forEach(item => io.observe(item));
 initReveals();
 
 /* ---------- Entry screen (tap to open) ----------
-   The actual open/close + intro hand-off lives in the inline <script> at
-   the top of index.html (it must run immediately, before this file has
-   necessarily loaded, so the very first tap is never dropped). This file
-   only needs to lock scroll until that inline script unlocks it. ---------- */
+   The actual open/close lives in the inline <script> at the top of
+   index.html (it must run immediately, before this file has necessarily
+   loaded, so the very first tap is never dropped, and so it can start the
+   song on that same tap). This file only needs to lock scroll until that
+   inline script unlocks it. ---------- */
 document.body.classList.add('entry-locked');
 
 /* ---------- Decoy button: dodges like a shy "No" button ---------- */
@@ -73,12 +74,36 @@ btnDecoy.addEventListener('focus', () => { dodgeDecoy(); btnDecoy.blur(); });
 window.addEventListener('resize', () => { if (decoyMoves > 0) dodgeDecoy(); });
 }
 
-/* ---------- Idea cards: pick one ---------- */
+/* ---------- Idea cards: pick one ----------
+   Tapping a card plays a tiny "he runs to her" story INSIDE that card
+   (using your real photos), then hands off to the celebration screen. ---------- */
 const cards = Array.from(document.querySelectorAll('.idea-card'));
 const celebration = document.getElementById('celebration');
 const celebrationChoice = document.getElementById('celebration-choice');
 const confettiLayer = document.getElementById('confetti-layer');
+const storyScene = document.getElementById('story-scene');
+const storyCaption = document.getElementById('story-caption');
 let chosen = false;
+
+function playCardStory(card, onDone) {
+if (!storyScene) { onDone(); return; }
+card.appendChild(storyScene);
+storyScene.hidden = false;
+storyScene.classList.remove('run', 'met', 'caption');
+if (storyCaption) storyCaption.textContent = 'wait for it…';
+void storyScene.offsetWidth; // force reflow so the animation restarts clean
+requestAnimationFrame(() => storyScene.classList.add('active'));
+
+setTimeout(() => storyScene.classList.add('run'), 60);
+
+setTimeout(() => {
+storyScene.classList.add('met');
+if (storyCaption) storyCaption.textContent = 'got you 🤍';
+storyScene.classList.add('caption');
+}, 950);
+
+setTimeout(onDone, 2000);
+}
 
 cards.forEach(card => {
 card.addEventListener('click', () => {
@@ -90,58 +115,16 @@ card.classList.add('selected');
 cards.forEach(other => { if (other !== card) other.classList.add('fade-out'); });
 if (btnDecoy) btnDecoy.style.display = 'none';
 
-setTimeout(() => {
+playCardStory(card, () => {
 celebration.hidden = false;
 document.body.style.overflow = 'hidden';
 if (celebrationChoice) celebrationChoice.textContent = emoji + ' ' + idea;
 burstConfetti();
 notifyChoice(idea);
-}, 550);
+if (storyScene) storyScene.hidden = true;
 });
 });
-
-/* ---------- Intro: "he runs to get her" scene, plays right after the
-   entry tap and BEFORE she ever sees the date options. Pure emoji + CSS --
-   no images or Bitmoji integration needed. Once he "reaches" her, the pair
-   walk off together and the real site (hero + option cards) fades in. ---------- */
-window.__runIntro = function () {
-const intro = document.getElementById('intro-scene');
-const scene = document.getElementById('run-scene');
-const caption = document.getElementById('intro-caption');
-const site = document.getElementById('site');
-if (!intro || !scene) {
-// No intro markup found -- fall back to just showing the site.
-if (site) site.hidden = false;
-return;
-}
-document.body.classList.add('entry-locked');
-intro.hidden = false;
-requestAnimationFrame(() => intro.classList.add('active'));
-scene.classList.remove('met', 'walk-off');
-void scene.offsetWidth; // force reflow so the animations start clean
-
-setTimeout(() => {
-scene.classList.add('met');
-if (caption) caption.textContent = "got you. let's pick something.";
-}, 1300);
-
-setTimeout(() => {
-scene.classList.add('walk-off');
-}, 1900);
-
-setTimeout(() => {
-intro.classList.remove('active');
-document.body.classList.remove('entry-locked');
-setTimeout(() => {
-intro.hidden = true;
-if (site) site.hidden = false;
-}, 500); // matches the intro's fade-out transition
-}, 3300);
-};
-
-// If the entry tap already happened before this script finished loading
-// (slow connection), the inline script flagged it -- run the intro now.
-if (window.__pendingIntro) { window.__pendingIntro = false; window.__runIntro(); }
+});
 
 function burstConfetti() {
 if (!confettiLayer) return;
@@ -184,3 +167,63 @@ headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 body: JSON.stringify(payload)
 }).catch(() => {});
 }
+
+/* ---------- Song (APT.) ---------- */
+const song = document.getElementById('song');
+const musicToggle = document.getElementById('music-toggle');
+let musicPausedByUser = false;
+
+function updateMusicUI() {
+if (!musicToggle || !song) return;
+musicToggle.classList.toggle('playing', !song.paused);
+if (!song.paused) musicToggle.classList.remove('needs-tap');
+}
+
+function tryStartMusic() {
+if (!song || musicPausedByUser) return;
+song.muted = false;
+song.volume = 1;
+const p = song.play();
+if (p && p.catch) {
+p.catch((err) => {
+console.warn('Music autoplay was blocked, will retry on next tap:', err && err.message);
+armFallbackRetry();
+});
+}
+}
+
+let fallbackArmed = false;
+function armFallbackRetry() {
+if (fallbackArmed || !song) return;
+fallbackArmed = true;
+if (musicToggle) musicToggle.classList.add('needs-tap');
+const retry = () => {
+if (!song.paused) return;
+tryStartMusic();
+};
+['click', 'touchend', 'pointerdown'].forEach(evt => {
+document.addEventListener(evt, retry, { passive: true });
+});
+}
+
+if (song) {
+song.addEventListener('play', updateMusicUI);
+song.addEventListener('pause', updateMusicUI);
+}
+
+if (musicToggle) {
+musicToggle.addEventListener('click', () => {
+if (!song) return;
+if (song.paused) {
+musicPausedByUser = false;
+tryStartMusic();
+} else {
+musicPausedByUser = true;
+song.pause();
+}
+});
+}
+
+// Belt-and-suspenders: if the entry tap's play() call silently never
+// actually started playback, arm the fallback retry too.
+setTimeout(() => { if (song && song.paused) armFallbackRetry(); }, 1200);

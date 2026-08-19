@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -31,12 +31,15 @@ var opened = false;
 function openNow(){
 if (opened) return;
 opened = true;
+var s = document.getElementById('song');
+if (s) {
+s.muted = false;
+s.volume = 1;
+var p = s.play();
+if (p && p.catch) p.catch(function(){});
+}
 entry.classList.add('hidden');
 document.body.classList.remove('entry-locked');
-// script.js (loaded at the bottom) owns the intro animation. On a slow
-// connection it might not have run yet -- in that case flag it as
-// pending so script.js can kick the intro off itself the moment it's ready.
-if (window.__runIntro) { window.__runIntro(); } else { window.__pendingIntro = true; }
 }
 ['pointerdown','mousedown','touchstart','touchend','click','keydown'].forEach(function(evt){
 document.addEventListener(evt, openNow, { capture: true, passive: true });
@@ -46,23 +49,21 @@ window.__entryOpenedEarly = function(){ return opened; };
 })();
 </script>
 
-<!-- INTRO: he runs to get her, before she picks anything -->
-<div id="intro-scene" class="intro-scene" hidden>
-<div class="intro-inner">
-<p class="eyebrow">wait for it</p>
-<div class="run-scene run-scene-intro" id="run-scene" aria-hidden="true">
-<div class="runner">🏃‍♂️</div>
-<div class="spark" id="run-spark">💥</div>
-<div class="waiting">🙋‍♀️</div>
-</div>
-<p class="script big" id="intro-caption">coming to get you&hellip;</p>
-</div>
-</div>
-
 <!-- ================= MAIN SITE ================= -->
-<main id="site" hidden>
+<main id="site">
 
 <div class="petals" aria-hidden="true"></div>
+
+<audio id="song" preload="auto" loop playsinline>
+<source src="song.mp3?v=1" type="audio/mpeg">
+</audio>
+<button id="music-toggle" type="button" aria-label="Play music">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+<path d="M9 18V5l12-2v13"/>
+<circle cx="6" cy="18" r="3"/>
+<circle cx="18" cy="16" r="3"/>
+</svg>
+</button>
 
 <!-- HERO -->
 <section class="hero">
@@ -111,11 +112,23 @@ Let's go on a date. <em>Your pick.</em>
 </div>
 </div>
 
+<!-- Shared "he runs to her" mini-story -- gets moved into whichever
+     card she taps, so there's only ever one copy of the photos in the DOM. -->
+<div id="story-scene" class="story-scene" hidden aria-hidden="true">
+<div class="story-photo story-man"><img src="images/man.jpg" alt=""></div>
+<div class="story-spark">💥</div>
+<div class="story-photo story-girl"><img src="images/girl.jpg" alt=""></div>
+<p class="story-caption" id="story-caption"></p>
+</div>
+
 <!-- Confirmation -->
 <div id="celebration" hidden>
 <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
 <div class="celebration-card">
-<p class="celebration-emoji">💕</p>
+<div class="celebration-couple">
+<img src="images/man.jpg" alt="" class="celebration-photo celebration-photo-man">
+<img src="images/girl.jpg" alt="" class="celebration-photo celebration-photo-girl">
+</div>
 <p class="script big">Perfect. It's a date.</p>
 <p class="celebration-sub" id="celebration-choice"></p>
 </div>
@@ -124,6 +137,6 @@ Let's go on a date. <em>Your pick.</em>
 
 </main>
 
-<script src="script.js?v=3"></script>
+<script src="script.js?v=4"></script>
 </body>
 </html>

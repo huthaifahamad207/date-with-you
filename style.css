@@ -57,24 +57,6 @@ font-size: 0.78rem;
 color: #DE7B9E;
 margin: 0;
 }
-/* ============ Intro: he runs to get her ============ */
-.intro-scene{
-position: fixed;
-inset: 0;
-z-index: 999;
-display: flex;
-align-items: center;
-justify-content: center;
-text-align: center;
-background: linear-gradient(180deg, #FBDEE9 0%, #FDF2F6 60%, #FFFBF9 100%);
-opacity: 0;
-transition: opacity 0.5s ease;
-}
-.intro-scene.active{ opacity: 1; }
-.intro-scene[hidden]{ display: none; }
-.intro-inner{ padding: 24px; max-width: 420px; }
-.intro-inner .eyebrow{ margin-bottom: 1.4rem; }
-.intro-inner .script.big{ margin-top: 4px; }
 body.entry-locked{ overflow: hidden; }
 body{
 margin:0;
@@ -127,6 +109,45 @@ animation: fall linear infinite;
 @keyframes fall{
 to{ transform: translateY(110vh) rotate(360deg); }
 }
+/* ============ Music toggle ============ */
+#music-toggle{
+position: fixed;
+top: 18px;
+right: 18px;
+z-index: 600;
+width: 44px;
+height: 44px;
+border-radius: 50%;
+border: 1.5px solid var(--rose-light);
+background: var(--cream);
+color: var(--rose-deep);
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+box-shadow: 0 10px 24px -12px rgba(74,36,56,0.35);
+transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+#music-toggle:hover{ transform: scale(1.06); }
+#music-toggle.playing{
+background: var(--rose-deep);
+color: var(--cream);
+animation: pulse-music 1.6s ease-in-out infinite;
+}
+@keyframes pulse-music{
+0%,100%{ transform: scale(1); }
+50%{ transform: scale(1.08); }
+}
+#music-toggle.needs-tap{
+border-color: var(--rose-deep);
+box-shadow: 0 0 0 0 rgba(222,123,158,0.55), 0 10px 24px -12px rgba(74,36,56,0.35);
+animation: glow-music 1.3s ease-in-out infinite;
+}
+@keyframes glow-music{
+0%{ box-shadow: 0 0 0 0 rgba(222,123,158,0.55); }
+70%{ box-shadow: 0 0 0 14px rgba(222,123,158,0); }
+100%{ box-shadow: 0 0 0 0 rgba(222,123,158,0); }
+}
 /* ============ Hero ============ */
 .hero{
 position: relative;
@@ -178,6 +199,8 @@ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 gap: 18px;
 }
 .idea-card{
+position: relative;
+overflow: hidden;
 font-family: var(--body);
 background: var(--cream);
 border: 1.5px solid var(--rose-light);
@@ -201,6 +224,7 @@ box-shadow: 0 20px 36px -16px rgba(222,123,158,0.45);
 background: var(--rose-deep);
 border-color: var(--rose-deep);
 animation: pop 0.4s ease;
+min-height: 168px;
 }
 .idea-card.selected .idea-name{ color: var(--cream); }
 @keyframes pop{
@@ -243,6 +267,81 @@ color: var(--plum-soft);
 cursor: pointer;
 transition: transform 0.15s ease;
 }
+/* ============ In-card story: "he runs to her" with real photos ============
+   This single template gets appended into whichever card is tapped, so
+   there's only ever one copy of the two photos in the DOM. It covers the
+   card completely (rounded corners inherited via clip from overflow:hidden
+   on .idea-card) and plays a tiny run-in / meet / caption sequence. ============ */
+.story-scene{
+position: absolute;
+inset: 0;
+z-index: 5;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 14px;
+background: var(--rose-deep);
+opacity: 0;
+transition: opacity 0.35s ease;
+}
+.story-scene[hidden]{ display: none; }
+.story-scene.active{ opacity: 1; }
+.story-photo{
+position: relative;
+width: 30%;
+max-width: 74px;
+aspect-ratio: 1 / 1;
+border-radius: 50%;
+overflow: hidden;
+border: 3px solid var(--cream);
+box-shadow: 0 8px 18px -6px rgba(30,10,20,0.55);
+flex: 0 0 auto;
+background: var(--cream);
+}
+.story-photo img{
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+}
+.story-man{ transform: translateX(-160%); }
+.story-scene.run .story-man{
+animation: story-run 0.85s cubic-bezier(.25,.85,.35,1) forwards;
+}
+@keyframes story-run{ to{ transform: translateX(0); } }
+.story-spark{
+position: absolute;
+top: 50%;
+left: 50%;
+font-size: 1.5rem;
+line-height: 1;
+opacity: 0;
+transform: translate(-50%, -50%) scale(0.4);
+z-index: 2;
+}
+.story-scene.met .story-spark{
+animation: story-spark-pop 0.55s ease-out forwards;
+}
+@keyframes story-spark-pop{
+0%{ opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+45%{ opacity: 1; transform: translate(-50%, -75%) scale(1.25); }
+100%{ opacity: 0; transform: translate(-50%, -95%) scale(0.9); }
+}
+.story-caption{
+position: absolute;
+left: 10px; right: 10px; bottom: 10px;
+margin: 0;
+text-align: center;
+font-family: var(--script);
+color: var(--cream);
+font-size: 1.05rem;
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.story-scene.caption .story-caption{ opacity: 1; }
+@media (prefers-reduced-motion: reduce){
+.story-man{ transform: translateX(0); }
+}
 /* ============ Confirmation ============ */
 #celebration{
 position: fixed; inset: 0;
@@ -274,102 +373,26 @@ font-size: 1.05rem;
 margin-top: 10px;
 font-weight: 600;
 }
-.celebration-emoji{
-font-size: 2.6rem;
-margin: 0 0 6px;
+.celebration-couple{
+display: flex;
+align-items: center;
+justify-content: center;
+margin: 0 0 8px;
 }
-/* ============ Run-to-you scene (no images needed -- pure emoji + CSS) ============ */
-.run-scene{
-position: relative;
-height: 92px;
-width: 100%;
-max-width: 320px;
-margin: 0 auto 10px;
-overflow: hidden;
+.celebration-photo{
+width: 108px;
+height: 108px;
+border-radius: 50%;
+object-fit: cover;
+border: 4px solid var(--cream);
+box-shadow: 0 14px 28px -12px rgba(74,36,56,0.5);
+background: var(--cream);
 }
-.run-scene-intro{
-height: 130px;
-max-width: 380px;
-margin: 0 auto 18px;
-}
-.run-scene-intro .runner,
-.run-scene-intro .waiting{
-font-size: 3.4rem;
-bottom: 14px;
-}
-.run-scene-intro .spark{
-font-size: 2rem;
-bottom: 42px;
-}
-.run-scene .runner,
-.run-scene .waiting{
-position: absolute;
-bottom: 8px;
-font-size: 2.5rem;
-line-height: 1;
-}
-.run-scene .runner{
-left: -60px;
-animation:
-run-in 1.3s cubic-bezier(.25,.85,.35,1) forwards,
-run-bounce 0.35s ease-in-out infinite;
-}
-.run-scene .waiting{
-right: 46px;
-animation: sway 1.1s ease-in-out infinite;
-}
-.run-scene .spark{
-position: absolute;
-bottom: 26px;
-left: 50%;
-font-size: 1.6rem;
-opacity: 0;
-transform: translate(-50%, 0) scale(0.4);
-}
-.run-scene.met .spark{
-animation: spark-pop 0.6s ease-out 1.25s forwards;
-}
-.run-scene.met .runner,
-.run-scene.met .waiting{
-animation-play-state: paused;
-}
-.run-scene.walk-off .runner{
-animation: walk-off-runner 1.1s ease-in forwards;
-}
-.run-scene.walk-off .waiting{
-animation: walk-off-waiting 1.1s ease-in forwards;
-}
-@keyframes run-in{
-0%{ left: -60px; }
-100%{ left: calc(50% - 56px); }
-}
-@keyframes run-bounce{
-0%,100%{ transform: translateY(0); }
-50%{ transform: translateY(-7px); }
-}
-@keyframes sway{
-0%,100%{ transform: rotate(-5deg); }
-50%{ transform: rotate(5deg); }
-}
-@keyframes spark-pop{
-0%{ opacity: 0; transform: translate(-50%, 0) scale(0.4); }
-40%{ opacity: 1; transform: translate(-50%, -6px) scale(1.2); }
-100%{ opacity: 0; transform: translate(-50%, -14px) scale(0.8); }
-}
-@keyframes walk-off-runner{
-from{ left: calc(50% - 56px); transform: translateY(0); }
-to{ left: 115%; transform: translateY(0); }
-}
-@keyframes walk-off-waiting{
-from{ right: 46px; transform: translateY(0); }
-to{ right: -60px; transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce){
-.run-scene .runner{ left: calc(50% - 56px); animation: none; }
-.run-scene .waiting{ animation: none; }
-}
+.celebration-photo-man{ margin-right: -22px; z-index: 1; }
+.celebration-photo-girl{ margin-left: -22px; z-index: 2; }
 /* ============ Responsive ============ */
 @media (max-width: 640px){
 .card-grid{ grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 .idea-card{ padding: 22px 14px; }
+.celebration-photo{ width: 86px; height: 86px; }
 }
