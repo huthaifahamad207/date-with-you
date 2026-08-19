@@ -298,10 +298,10 @@ animation: spark-pop 0.6s ease-out 1.25s forwards;
 animation-play-state: paused;
 }
 .run-scene.walk-off .runner{
-animation: walk-off-runner 1.1s ease-in 1.9s forwards;
+animation: walk-off-runner 1.1s ease-in forwards;
 }
 .run-scene.walk-off .waiting{
-animation: walk-off-waiting 1.1s ease-in 1.9s forwards;
+animation: walk-off-waiting 1.1s ease-in forwards;
 }
 @keyframes run-in{
 0%{ left: -60px; }
@@ -321,9 +321,11 @@ animation: walk-off-waiting 1.1s ease-in 1.9s forwards;
 100%{ opacity: 0; transform: translate(-50%, -14px) scale(0.8); }
 }
 @keyframes walk-off-runner{
+from{ left: calc(50% - 56px); transform: translateY(0); }
 to{ left: 115%; transform: translateY(0); }
 }
 @keyframes walk-off-waiting{
+from{ right: 46px; transform: translateY(0); }
 to{ right: -60px; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce){
