@@ -32,12 +32,77 @@ items.forEach(item => io.observe(item));
 initReveals();
 
 /* ---------- Entry screen (tap to open) ----------
-   The actual open/close lives in the inline <script> at the top of
-   index.html (it must run immediately, before this file has necessarily
-   loaded, so the very first tap is never dropped, and so it can start the
-   song on that same tap). This file only needs to lock scroll until that
-   inline script unlocks it. ---------- */
+   The actual open/close + chase hand-off lives in the inline <script> at
+   the top of index.html (it must run immediately, before this file has
+   necessarily loaded, so the very first tap is never dropped, and so it
+   can start the song on that same tap). This file only needs to lock
+   scroll until that inline script unlocks it. ---------- */
 document.body.classList.add('entry-locked');
+
+/* ---------- Opening story: she runs, he chases, catches her, carts her
+   off to the options screen. One continuous timeline, real photos, pure
+   CSS transforms -- no sprite art or Bitmoji integration needed. ---------- */
+window.__runChase = function () {
+const intro = document.getElementById('story-intro');
+const stage = document.getElementById('chase-stage');
+const group = document.getElementById('chase-group');
+const girl = document.getElementById('chase-girl');
+const boy = document.getElementById('chase-boy');
+const cart = document.getElementById('chase-cart');
+const capTop = document.getElementById('chase-caption-top');
+const capBottom = document.getElementById('chase-caption-bottom');
+const site = document.getElementById('site');
+
+if (!intro || !stage || !group || !girl || !boy) {
+// No chase markup found -- fall back to just showing the site.
+if (site) site.hidden = false;
+return;
+}
+
+document.body.classList.add('entry-locked');
+intro.hidden = false;
+requestAnimationFrame(() => intro.classList.add('active'));
+
+// Reset to a clean starting state in case this ever runs more than once.
+stage.classList.remove('run', 'catch', 'cart', 'pull');
+group.style.transform = '';
+void stage.offsetWidth; // force reflow so animations restart clean
+
+// t=0: she takes off running, he takes off after her.
+stage.classList.add('run');
+
+// t=1.6s: he catches up to her -- little surprised hop + heart pop.
+setTimeout(() => {
+stage.classList.add('catch');
+if (capTop) capTop.textContent = 'got you!';
+}, 1600);
+
+// t=2.1s: he scoops her into the cart.
+setTimeout(() => {
+stage.classList.add('cart');
+if (capBottom) capBottom.textContent = 'your chariot awaits…';
+}, 2100);
+
+// t=2.7s: he pulls the cart off toward the options.
+setTimeout(() => {
+stage.classList.add('pull');
+}, 2700);
+
+// t=3.9s: they've arrived -- fade the story out and reveal the site
+// (which already has her waiting in a little cart above the options).
+setTimeout(() => {
+intro.classList.remove('active');
+document.body.classList.remove('entry-locked');
+setTimeout(() => {
+intro.hidden = true;
+if (site) site.hidden = false;
+}, 550);
+}, 3900);
+};
+
+// If the entry tap already happened before this script finished loading
+// (slow connection), the inline script flagged it -- run the chase now.
+if (window.__pendingChase) { window.__pendingChase = false; window.__runChase(); }
 
 /* ---------- Decoy button: dodges like a shy "No" button ---------- */
 const btnDecoy = document.getElementById('btn-decoy');
@@ -74,36 +139,12 @@ btnDecoy.addEventListener('focus', () => { dodgeDecoy(); btnDecoy.blur(); });
 window.addEventListener('resize', () => { if (decoyMoves > 0) dodgeDecoy(); });
 }
 
-/* ---------- Idea cards: pick one ----------
-   Tapping a card plays a tiny "he runs to her" story INSIDE that card
-   (using your real photos), then hands off to the celebration screen. ---------- */
+/* ---------- Idea cards: pick one ---------- */
 const cards = Array.from(document.querySelectorAll('.idea-card'));
 const celebration = document.getElementById('celebration');
 const celebrationChoice = document.getElementById('celebration-choice');
 const confettiLayer = document.getElementById('confetti-layer');
-const storyScene = document.getElementById('story-scene');
-const storyCaption = document.getElementById('story-caption');
 let chosen = false;
-
-function playCardStory(card, onDone) {
-if (!storyScene) { onDone(); return; }
-card.appendChild(storyScene);
-storyScene.hidden = false;
-storyScene.classList.remove('run', 'met', 'caption');
-if (storyCaption) storyCaption.textContent = 'wait for it…';
-void storyScene.offsetWidth; // force reflow so the animation restarts clean
-requestAnimationFrame(() => storyScene.classList.add('active'));
-
-setTimeout(() => storyScene.classList.add('run'), 60);
-
-setTimeout(() => {
-storyScene.classList.add('met');
-if (storyCaption) storyCaption.textContent = 'got you 🤍';
-storyScene.classList.add('caption');
-}, 950);
-
-setTimeout(onDone, 2000);
-}
 
 cards.forEach(card => {
 card.addEventListener('click', () => {
@@ -115,14 +156,13 @@ card.classList.add('selected');
 cards.forEach(other => { if (other !== card) other.classList.add('fade-out'); });
 if (btnDecoy) btnDecoy.style.display = 'none';
 
-playCardStory(card, () => {
+setTimeout(() => {
 celebration.hidden = false;
 document.body.style.overflow = 'hidden';
 if (celebrationChoice) celebrationChoice.textContent = emoji + ' ' + idea;
 burstConfetti();
 notifyChoice(idea);
-if (storyScene) storyScene.hidden = true;
-});
+}, 550);
 });
 });
 

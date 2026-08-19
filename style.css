@@ -148,6 +148,171 @@ animation: glow-music 1.3s ease-in-out infinite;
 70%{ box-shadow: 0 0 0 14px rgba(222,123,158,0); }
 100%{ box-shadow: 0 0 0 0 rgba(222,123,158,0); }
 }
+/* ============ Opening story: she runs, he chases, catches her,
+   carts her off to the options. Real photos + pure CSS transforms. ============ */
+.story-intro{
+position: fixed;
+inset: 0;
+z-index: 999;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center;
+background: linear-gradient(180deg, #FBDEE9 0%, #FDF2F6 60%, #FFFBF9 100%);
+opacity: 0;
+transition: opacity 0.55s ease;
+padding: 24px;
+}
+.story-intro.active{ opacity: 1; }
+.story-intro[hidden]{ display: none; }
+.story-intro-caption{
+font-family: var(--script);
+color: var(--rose-deep);
+font-size: 1.6rem;
+margin: 0 0 18px;
+min-height: 1.4em;
+}
+.story-intro-caption-bottom{ margin: 18px 0 0; }
+.chase-stage{
+position: relative;
+width: 100%;
+max-width: 640px;
+height: 230px;
+overflow: hidden;
+}
+.chase-group{
+position: absolute;
+inset: 0;
+transition: transform 1.2s ease-in;
+}
+.chase-stage.pull .chase-group{ transform: translateX(34%); }
+.chase-person{
+position: absolute;
+bottom: 12px;
+width: 96px;
+height: 96px;
+border-radius: 50%;
+overflow: hidden;
+border: 4px solid var(--cream);
+box-shadow: 0 12px 26px -10px rgba(30,10,20,0.55);
+background: var(--cream);
+}
+.chase-person img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.chase-girl{
+left: -20%;
+z-index: 3;
+animation: chase-run-girl 1.3s ease-out forwards, chase-bounce 0.32s ease-in-out infinite;
+}
+.chase-boy{
+left: -38%;
+z-index: 2;
+animation: chase-run-boy 1.6s ease-out forwards, chase-bounce 0.3s ease-in-out infinite 0.05s;
+}
+@keyframes chase-run-girl{ from{ left: -20%; } to{ left: 46%; } }
+@keyframes chase-run-boy{ from{ left: -38%; } to{ left: 46%; } }
+@keyframes chase-bounce{
+0%,100%{ transform: translateY(0) rotate(0deg); }
+50%{ transform: translateY(-9px) rotate(2deg); }
+}
+/* Catch: pin both at the meeting spot (no snap-back) and play a one-shot hop/bump. */
+.chase-stage.catch .chase-girl{
+left: 46%;
+animation: chase-hop 0.5s ease-out;
+}
+.chase-stage.catch .chase-boy{
+left: 46%;
+animation: chase-bump 0.4s ease-out;
+}
+@keyframes chase-hop{
+0%{ transform: translateY(0) rotate(0deg); }
+30%{ transform: translateY(-18px) rotate(-5deg); }
+60%{ transform: translateY(3px) rotate(3deg); }
+100%{ transform: translateY(0) rotate(0deg); }
+}
+@keyframes chase-bump{
+0%{ transform: translateY(0) rotate(0deg); }
+40%{ transform: translateY(-6px) rotate(-6deg); }
+100%{ transform: translateY(0) rotate(0deg); }
+}
+.chase-spark{
+position: absolute;
+left: 46%;
+bottom: 96px;
+font-size: 2rem;
+line-height: 1;
+opacity: 0;
+transform: translate(-50%, -50%) scale(0.4);
+z-index: 4;
+}
+.chase-stage.catch .chase-spark{
+animation: chase-spark-pop 0.6s ease-out forwards;
+}
+@keyframes chase-spark-pop{
+0%{ opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+45%{ opacity: 1; transform: translate(-50%, -90%) scale(1.3); }
+100%{ opacity: 0; transform: translate(-50%, -120%) scale(0.9); }
+}
+/* Cart: he scoops her up onto the cart, explicit transforms so nothing snaps. */
+.chase-stage.cart .chase-girl{
+left: 46%;
+animation: none;
+transform: translateY(-30px) scale(0.86);
+transition: transform 0.4s ease;
+z-index: 3;
+}
+.chase-stage.cart .chase-boy{
+left: 38%;
+animation: none;
+transform: rotate(-8deg);
+transition: left 0.4s ease, transform 0.4s ease;
+z-index: 2;
+}
+.cart-shape{
+position: absolute;
+bottom: 4px;
+left: 46%;
+width: 74px;
+height: 52px;
+opacity: 0;
+transform: translateX(-50%) scale(0.6);
+transition: opacity 0.4s ease, transform 0.4s ease;
+pointer-events: none;
+z-index: 1;
+}
+.chase-stage.cart .cart-shape,
+.chase-stage.pull .cart-shape{
+opacity: 1;
+transform: translateX(-50%) scale(1);
+}
+.cart-body{
+position: absolute;
+left: 0; right: 0;
+bottom: 22%;
+height: 58%;
+background: var(--rose-deep);
+border-radius: 12px 12px 6px 6px;
+box-shadow: inset 0 -5px 0 rgba(74,36,56,0.18), 0 8px 16px -8px rgba(74,36,56,0.4);
+}
+.cart-wheel{
+position: absolute;
+bottom: -4%;
+width: 22%;
+aspect-ratio: 1 / 1;
+border-radius: 50%;
+background: var(--plum);
+box-shadow: 0 0 0 2px var(--cream) inset;
+}
+.cart-wheel-a{ left: 8%; }
+.cart-wheel-b{ left: 66%; }
+.chase-stage.pull .cart-wheel{
+animation: cart-wheel-spin 0.5s linear infinite;
+}
+@keyframes cart-wheel-spin{ to{ transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce){
+.chase-girl{ left: 46%; animation: none; }
+.chase-boy{ left: 38%; animation: none; }
+}
 /* ============ Hero ============ */
 .hero{
 position: relative;
@@ -190,13 +355,44 @@ text-align: center;
 font-family: var(--display);
 font-weight: 600;
 font-size: clamp(1.9rem, 5vw, 2.6rem);
-margin: 0 0 40px;
+margin: 0 0 20px;
 color: var(--plum);
 }
+/* Persistent little illustration above the cards: she's still in the cart
+   while the options wait around her. Static -- same two photos, no motion. */
+.cart-illustration{
+position: relative;
+height: 112px;
+max-width: 260px;
+margin: 0 auto 34px;
+}
+.cart-illustration .cart-shape-mini{
+position: absolute;
+bottom: 6px;
+left: 50%;
+width: 80px;
+height: 56px;
+transform: translateX(-50%);
+opacity: 1;
+}
+.mini-person{
+position: absolute;
+bottom: 18px;
+width: 62px;
+height: 62px;
+border-radius: 50%;
+overflow: hidden;
+border: 3px solid var(--cream);
+box-shadow: 0 8px 16px -8px rgba(74,36,56,0.4);
+background: var(--cream);
+}
+.mini-person img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+.mini-boy{ left: calc(50% - 76px); transform: rotate(-6deg); }
+.mini-girl{ left: calc(50% - 4px); transform: translateY(-20px) scale(0.92); z-index: 2; }
 .card-grid{
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-gap: 18px;
+grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+gap: 16px;
 }
 .idea-card{
 position: relative;
@@ -205,7 +401,7 @@ font-family: var(--body);
 background: var(--cream);
 border: 1.5px solid var(--rose-light);
 border-radius: 22px;
-padding: 28px 18px;
+padding: 26px 16px;
 cursor: pointer;
 display: flex;
 flex-direction: column;
@@ -224,7 +420,6 @@ box-shadow: 0 20px 36px -16px rgba(222,123,158,0.45);
 background: var(--rose-deep);
 border-color: var(--rose-deep);
 animation: pop 0.4s ease;
-min-height: 168px;
 }
 .idea-card.selected .idea-name{ color: var(--cream); }
 @keyframes pop{
@@ -238,13 +433,13 @@ transform: scale(0.94);
 pointer-events: none;
 }
 .idea-emoji{
-font-size: 2.2rem;
+font-size: 2.1rem;
 transition: transform 0.25s ease;
 }
 .idea-card:hover .idea-emoji{ transform: scale(1.15) rotate(-4deg); }
 .idea-name{
 font-weight: 600;
-font-size: 0.98rem;
+font-size: 0.95rem;
 color: var(--plum);
 line-height: 1.35;
 }
@@ -266,81 +461,6 @@ background: transparent;
 color: var(--plum-soft);
 cursor: pointer;
 transition: transform 0.15s ease;
-}
-/* ============ In-card story: "he runs to her" with real photos ============
-   This single template gets appended into whichever card is tapped, so
-   there's only ever one copy of the two photos in the DOM. It covers the
-   card completely (rounded corners inherited via clip from overflow:hidden
-   on .idea-card) and plays a tiny run-in / meet / caption sequence. ============ */
-.story-scene{
-position: absolute;
-inset: 0;
-z-index: 5;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 14px;
-background: var(--rose-deep);
-opacity: 0;
-transition: opacity 0.35s ease;
-}
-.story-scene[hidden]{ display: none; }
-.story-scene.active{ opacity: 1; }
-.story-photo{
-position: relative;
-width: 30%;
-max-width: 74px;
-aspect-ratio: 1 / 1;
-border-radius: 50%;
-overflow: hidden;
-border: 3px solid var(--cream);
-box-shadow: 0 8px 18px -6px rgba(30,10,20,0.55);
-flex: 0 0 auto;
-background: var(--cream);
-}
-.story-photo img{
-width: 100%;
-height: 100%;
-object-fit: cover;
-display: block;
-}
-.story-man{ transform: translateX(-160%); }
-.story-scene.run .story-man{
-animation: story-run 0.85s cubic-bezier(.25,.85,.35,1) forwards;
-}
-@keyframes story-run{ to{ transform: translateX(0); } }
-.story-spark{
-position: absolute;
-top: 50%;
-left: 50%;
-font-size: 1.5rem;
-line-height: 1;
-opacity: 0;
-transform: translate(-50%, -50%) scale(0.4);
-z-index: 2;
-}
-.story-scene.met .story-spark{
-animation: story-spark-pop 0.55s ease-out forwards;
-}
-@keyframes story-spark-pop{
-0%{ opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
-45%{ opacity: 1; transform: translate(-50%, -75%) scale(1.25); }
-100%{ opacity: 0; transform: translate(-50%, -95%) scale(0.9); }
-}
-.story-caption{
-position: absolute;
-left: 10px; right: 10px; bottom: 10px;
-margin: 0;
-text-align: center;
-font-family: var(--script);
-color: var(--cream);
-font-size: 1.05rem;
-opacity: 0;
-transition: opacity 0.3s ease;
-}
-.story-scene.caption .story-caption{ opacity: 1; }
-@media (prefers-reduced-motion: reduce){
-.story-man{ transform: translateX(0); }
 }
 /* ============ Confirmation ============ */
 #celebration{
@@ -392,7 +512,10 @@ background: var(--cream);
 .celebration-photo-girl{ margin-left: -22px; z-index: 2; }
 /* ============ Responsive ============ */
 @media (max-width: 640px){
-.card-grid{ grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-.idea-card{ padding: 22px 14px; }
+.card-grid{ grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); }
+.idea-card{ padding: 20px 12px; }
 .celebration-photo{ width: 86px; height: 86px; }
+.chase-stage{ height: 190px; }
+.chase-person{ width: 76px; height: 76px; }
+.chase-spark{ bottom: 78px; }
 }

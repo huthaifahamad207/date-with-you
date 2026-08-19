@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -40,6 +40,10 @@ if (p && p.catch) p.catch(function(){});
 }
 entry.classList.add('hidden');
 document.body.classList.remove('entry-locked');
+// script.js (loaded at the bottom) owns the chase-and-cart opening story.
+// On a slow connection it might not have run yet -- flag it as pending so
+// script.js can kick it off itself the moment it's ready.
+if (window.__runChase) { window.__runChase(); } else { window.__pendingChase = true; }
 }
 ['pointerdown','mousedown','touchstart','touchend','click','keydown'].forEach(function(evt){
 document.addEventListener(evt, openNow, { capture: true, passive: true });
@@ -48,6 +52,25 @@ entry.addEventListener(evt, openNow, { passive: true });
 window.__entryOpenedEarly = function(){ return opened; };
 })();
 </script>
+
+<!-- OPENING STORY: she runs, he chases, catches her, carts her off to the
+     options. Pure photos + CSS transforms -- no sprite art needed. -->
+<div id="story-intro" class="story-intro" hidden>
+<p class="story-intro-caption" id="chase-caption-top">she's making a run for it&hellip;</p>
+<div class="chase-stage" id="chase-stage">
+<div class="chase-group" id="chase-group">
+<div class="cart-shape chase-cart" id="chase-cart" aria-hidden="true">
+<div class="cart-body"></div>
+<div class="cart-wheel cart-wheel-a"></div>
+<div class="cart-wheel cart-wheel-b"></div>
+</div>
+<div class="chase-person chase-boy" id="chase-boy"><img src="images/man.jpg" alt=""></div>
+<div class="chase-person chase-girl" id="chase-girl"><img src="images/girl.jpg" alt=""></div>
+<div class="chase-spark" aria-hidden="true">💥</div>
+</div>
+</div>
+<p class="story-intro-caption story-intro-caption-bottom" id="chase-caption-bottom"></p>
+</div>
 
 <!-- ================= MAIN SITE ================= -->
 <main id="site">
@@ -80,45 +103,64 @@ Let's go on a date. <em>Your pick.</em>
 <p class="eyebrow reveal">choose our next date</p>
 <h2 class="ideas-title reveal">What sounds fun to you?</h2>
 
+<!-- Persistent little illustration: she's still in the cart while the
+     options wait around her. Static, no motion -- same two photos. -->
+<div class="cart-illustration reveal" aria-hidden="true">
+<div class="cart-shape cart-shape-mini">
+<div class="cart-body"></div>
+<div class="cart-wheel cart-wheel-a"></div>
+<div class="cart-wheel cart-wheel-b"></div>
+</div>
+<div class="mini-person mini-boy"><img src="images/man.jpg" alt=""></div>
+<div class="mini-person mini-girl"><img src="images/girl.jpg" alt=""></div>
+</div>
+
 <div class="card-grid reveal" id="card-grid">
-<button class="idea-card" data-idea="Cook together &amp; bad music" data-emoji="🍝">
-<span class="idea-emoji">🍝</span>
-<span class="idea-name">Cook together, terrible playlist</span>
-</button>
-<button class="idea-card" data-idea="Stargazing with blankets" data-emoji="🌌">
-<span class="idea-emoji">🌌</span>
-<span class="idea-name">Stargazing, blankets, no plan</span>
-</button>
-<button class="idea-card" data-idea="Sunset walk &amp; ice cream" data-emoji="🌅">
-<span class="idea-emoji">🌅</span>
-<span class="idea-name">Sunset walk + ice cream</span>
-</button>
-<button class="idea-card" data-idea="Movie marathon blanket fort" data-emoji="🎬">
-<span class="idea-emoji">🎬</span>
-<span class="idea-name">Movie marathon, blanket fort</span>
-</button>
-<button class="idea-card" data-idea="Road trip, no destination" data-emoji="🚗">
-<span class="idea-emoji">🚗</span>
-<span class="idea-name">Road trip, no destination</span>
-</button>
-<button class="idea-card" data-idea="Dinner somewhere new" data-emoji="🍽️">
+<button class="idea-card" data-idea="Lunch / Dinner" data-emoji="🍽️">
 <span class="idea-emoji">🍽️</span>
-<span class="idea-name">Dinner, somewhere new</span>
+<span class="idea-name">Lunch / Dinner</span>
+</button>
+<button class="idea-card" data-idea="Movie" data-emoji="🎬">
+<span class="idea-emoji">🎬</span>
+<span class="idea-name">Movie</span>
+</button>
+<button class="idea-card" data-idea="Horseback Riding" data-emoji="🏇">
+<span class="idea-emoji">🏇</span>
+<span class="idea-name">Horseback Riding</span>
+</button>
+<button class="idea-card" data-idea="Coffee" data-emoji="☕">
+<span class="idea-emoji">☕</span>
+<span class="idea-name">Coffee</span>
+</button>
+<button class="idea-card" data-idea="Romantic Date" data-emoji="🌹">
+<span class="idea-emoji">🌹</span>
+<span class="idea-name">Romantic Date</span>
+</button>
+<button class="idea-card" data-idea="Games" data-emoji="🎮">
+<span class="idea-emoji">🎮</span>
+<span class="idea-name">Games</span>
+</button>
+<button class="idea-card" data-idea="Outdoor Activity" data-emoji="🌳">
+<span class="idea-emoji">🌳</span>
+<span class="idea-name">Outdoor Activity</span>
+</button>
+<button class="idea-card" data-idea="Trip / Travel" data-emoji="✈️">
+<span class="idea-emoji">✈️</span>
+<span class="idea-name">Trip / Travel</span>
+</button>
+<button class="idea-card" data-idea="Surprise" data-emoji="🎁">
+<span class="idea-emoji">🎁</span>
+<span class="idea-name">Surprise</span>
+</button>
+<button class="idea-card" data-idea="Other date ideas" data-emoji="❤️">
+<span class="idea-emoji">❤️</span>
+<span class="idea-name">Other date ideas</span>
 </button>
 </div>
 
 <div class="decoy-row reveal">
 <button id="btn-decoy" class="btn-decoy">none of these, surprise me</button>
 </div>
-</div>
-
-<!-- Shared "he runs to her" mini-story -- gets moved into whichever
-     card she taps, so there's only ever one copy of the photos in the DOM. -->
-<div id="story-scene" class="story-scene" hidden aria-hidden="true">
-<div class="story-photo story-man"><img src="images/man.jpg" alt=""></div>
-<div class="story-spark">💥</div>
-<div class="story-photo story-girl"><img src="images/girl.jpg" alt=""></div>
-<p class="story-caption" id="story-caption"></p>
 </div>
 
 <!-- Confirmation -->
@@ -137,6 +179,6 @@ Let's go on a date. <em>Your pick.</em>
 
 </main>
 
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>
