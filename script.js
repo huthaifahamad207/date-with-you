@@ -103,9 +103,22 @@ document.body.style.overflow = 'hidden';
 if (celebrationChoice) celebrationChoice.textContent = emoji + ' ' + idea;
 burstConfetti();
 notifyChoice(idea);
+playRunScene();
 }, 550);
 });
 });
+
+/* ---------- "Running to you" scene: he runs in, they meet, they walk off
+   together. Pure emoji + CSS -- no images or Bitmoji integration needed. ---------- */
+function playRunScene() {
+const scene = document.getElementById('run-scene');
+if (!scene) return;
+// Restart animations cleanly in case this ever runs more than once.
+scene.classList.remove('met', 'walk-off');
+void scene.offsetWidth; // force reflow so the animations restart
+setTimeout(() => scene.classList.add('met'), 1300);
+setTimeout(() => scene.classList.add('walk-off'), 1900);
+}
 
 function burstConfetti() {
 if (!confettiLayer) return;
