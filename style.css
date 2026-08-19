@@ -57,6 +57,24 @@ font-size: 0.78rem;
 color: #DE7B9E;
 margin: 0;
 }
+/* ============ Intro: he runs to get her ============ */
+.intro-scene{
+position: fixed;
+inset: 0;
+z-index: 999;
+display: flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+background: linear-gradient(180deg, #FBDEE9 0%, #FDF2F6 60%, #FFFBF9 100%);
+opacity: 0;
+transition: opacity 0.5s ease;
+}
+.intro-scene.active{ opacity: 1; }
+.intro-scene[hidden]{ display: none; }
+.intro-inner{ padding: 24px; max-width: 420px; }
+.intro-inner .eyebrow{ margin-bottom: 1.4rem; }
+.intro-inner .script.big{ margin-top: 4px; }
 body.entry-locked{ overflow: hidden; }
 body{
 margin:0;
@@ -256,6 +274,10 @@ font-size: 1.05rem;
 margin-top: 10px;
 font-weight: 600;
 }
+.celebration-emoji{
+font-size: 2.6rem;
+margin: 0 0 6px;
+}
 /* ============ Run-to-you scene (no images needed -- pure emoji + CSS) ============ */
 .run-scene{
 position: relative;
@@ -264,6 +286,20 @@ width: 100%;
 max-width: 320px;
 margin: 0 auto 10px;
 overflow: hidden;
+}
+.run-scene-intro{
+height: 130px;
+max-width: 380px;
+margin: 0 auto 18px;
+}
+.run-scene-intro .runner,
+.run-scene-intro .waiting{
+font-size: 3.4rem;
+bottom: 14px;
+}
+.run-scene-intro .spark{
+font-size: 2rem;
+bottom: 42px;
 }
 .run-scene .runner,
 .run-scene .waiting{

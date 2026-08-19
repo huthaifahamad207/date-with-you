@@ -31,19 +31,12 @@ items.forEach(item => io.observe(item));
 }
 initReveals();
 
-/* ---------- Entry screen (tap to open) ---------- */
-const entryScreen = document.getElementById('entry-screen');
-if (entryScreen) {
+/* ---------- Entry screen (tap to open) ----------
+   The actual open/close + intro hand-off lives in the inline <script> at
+   the top of index.html (it must run immediately, before this file has
+   necessarily loaded, so the very first tap is never dropped). This file
+   only needs to lock scroll until that inline script unlocks it. ---------- */
 document.body.classList.add('entry-locked');
-const openSite = () => {
-entryScreen.classList.add('hidden');
-document.body.classList.remove('entry-locked');
-};
-['click', 'touchend', 'pointerdown'].forEach(evt => {
-entryScreen.addEventListener(evt, openSite, { passive: true });
-document.addEventListener(evt, openSite, { capture: true, passive: true });
-});
-}
 
 /* ---------- Decoy button: dodges like a shy "No" button ---------- */
 const btnDecoy = document.getElementById('btn-decoy');
@@ -103,22 +96,52 @@ document.body.style.overflow = 'hidden';
 if (celebrationChoice) celebrationChoice.textContent = emoji + ' ' + idea;
 burstConfetti();
 notifyChoice(idea);
-playRunScene();
 }, 550);
 });
 });
 
-/* ---------- "Running to you" scene: he runs in, they meet, they walk off
-   together. Pure emoji + CSS -- no images or Bitmoji integration needed. ---------- */
-function playRunScene() {
+/* ---------- Intro: "he runs to get her" scene, plays right after the
+   entry tap and BEFORE she ever sees the date options. Pure emoji + CSS --
+   no images or Bitmoji integration needed. Once he "reaches" her, the pair
+   walk off together and the real site (hero + option cards) fades in. ---------- */
+window.__runIntro = function () {
+const intro = document.getElementById('intro-scene');
 const scene = document.getElementById('run-scene');
-if (!scene) return;
-// Restart animations cleanly in case this ever runs more than once.
-scene.classList.remove('met', 'walk-off');
-void scene.offsetWidth; // force reflow so the animations restart
-setTimeout(() => scene.classList.add('met'), 1300);
-setTimeout(() => scene.classList.add('walk-off'), 1900);
+const caption = document.getElementById('intro-caption');
+const site = document.getElementById('site');
+if (!intro || !scene) {
+// No intro markup found -- fall back to just showing the site.
+if (site) site.hidden = false;
+return;
 }
+document.body.classList.add('entry-locked');
+intro.hidden = false;
+requestAnimationFrame(() => intro.classList.add('active'));
+scene.classList.remove('met', 'walk-off');
+void scene.offsetWidth; // force reflow so the animations start clean
+
+setTimeout(() => {
+scene.classList.add('met');
+if (caption) caption.textContent = "got you. let's pick something.";
+}, 1300);
+
+setTimeout(() => {
+scene.classList.add('walk-off');
+}, 1900);
+
+setTimeout(() => {
+intro.classList.remove('active');
+document.body.classList.remove('entry-locked');
+setTimeout(() => {
+intro.hidden = true;
+if (site) site.hidden = false;
+}, 500); // matches the intro's fade-out transition
+}, 3300);
+};
+
+// If the entry tap already happened before this script finished loading
+// (slow connection), the inline script flagged it -- run the intro now.
+if (window.__pendingIntro) { window.__pendingIntro = false; window.__runIntro(); }
 
 function burstConfetti() {
 if (!confettiLayer) return;
