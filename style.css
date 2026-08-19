@@ -210,7 +210,7 @@ z-index: 2;
 animation: chase-run-boy 1.6s ease-out forwards, chase-bounce 0.3s ease-in-out infinite 0.05s;
 }
 @keyframes chase-run-girl{ from{ left: -20%; } to{ left: 46%; } }
-@keyframes chase-run-boy{ from{ left: -38%; } to{ left: 46%; } }
+@keyframes chase-run-boy{ from{ left: -38%; } to{ left: 36%; } }
 @keyframes chase-bounce{
 0%,100%{ transform: translateY(0) rotate(0deg); }
 50%{ transform: translateY(-9px) rotate(2deg); }
@@ -221,7 +221,7 @@ left: 46%;
 animation: chase-hop 0.5s ease-out;
 }
 .chase-stage.catch .chase-boy{
-left: 46%;
+left: 36%;
 animation: chase-bump 0.4s ease-out;
 }
 @keyframes chase-hop{
