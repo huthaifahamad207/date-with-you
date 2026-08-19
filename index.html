@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Pick Our Next Date</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+
+<!-- ENTRY / TAP TO OPEN -->
+<div id="entry-screen">
+<div class="entry-inner">
+<p class="entry-heart">💌</p>
+<p class="entry-title">a little question</p>
+<p class="entry-text">tap to open</p>
+</div>
+</div>
+<script>
+(function(){
+var entry = document.getElementById('entry-screen');
+if (!entry) return;
+var opened = false;
+function openNow(){
+if (opened) return;
+opened = true;
+entry.classList.add('hidden');
+document.body.classList.remove('entry-locked');
+}
+['pointerdown','mousedown','touchstart','touchend','click','keydown'].forEach(function(evt){
+document.addEventListener(evt, openNow, { capture: true, passive: true });
+entry.addEventListener(evt, openNow, { passive: true });
+});
+window.__entryOpenedEarly = function(){ return opened; };
+})();
+</script>
+
+<!-- ================= MAIN SITE ================= -->
+<main id="site">
+
+<div class="petals" aria-hidden="true"></div>
+
+<!-- HERO -->
+<section class="hero">
+<p class="eyebrow reveal">for you</p>
+<h1 class="hero-title reveal">
+Let's go on a date. <em>Your pick.</em>
+</h1>
+<p class="hero-sub reveal">tap whichever one sounds like you</p>
+</section>
+
+<!-- IDEAS -->
+<section class="ideas">
+<div class="ideas-inner">
+<p class="eyebrow reveal">choose our next date</p>
+<h2 class="ideas-title reveal">What sounds fun to you?</h2>
+
+<div class="card-grid reveal" id="card-grid">
+<button class="idea-card" data-idea="Cook together &amp; bad music" data-emoji="🍝">
+<span class="idea-emoji">🍝</span>
+<span class="idea-name">Cook together, terrible playlist</span>
+</button>
+<button class="idea-card" data-idea="Stargazing with blankets" data-emoji="🌌">
+<span class="idea-emoji">🌌</span>
+<span class="idea-name">Stargazing, blankets, no plan</span>
+</button>
+<button class="idea-card" data-idea="Sunset walk &amp; ice cream" data-emoji="🌅">
+<span class="idea-emoji">🌅</span>
+<span class="idea-name">Sunset walk + ice cream</span>
+</button>
+<button class="idea-card" data-idea="Movie marathon blanket fort" data-emoji="🎬">
+<span class="idea-emoji">🎬</span>
+<span class="idea-name">Movie marathon, blanket fort</span>
+</button>
+<button class="idea-card" data-idea="Road trip, no destination" data-emoji="🚗">
+<span class="idea-emoji">🚗</span>
+<span class="idea-name">Road trip, no destination</span>
+</button>
+<button class="idea-card" data-idea="Dinner somewhere new" data-emoji="🍽️">
+<span class="idea-emoji">🍽️</span>
+<span class="idea-name">Dinner, somewhere new</span>
+</button>
+</div>
+
+<div class="decoy-row reveal">
+<button id="btn-decoy" class="btn-decoy">none of these, surprise me</button>
+</div>
+</div>
+
+<!-- Confirmation -->
+<div id="celebration" hidden>
+<div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+<div class="celebration-card">
+<p class="celebration-emoji">💕</p>
+<p class="script big">Perfect. It's a date.</p>
+<p class="celebration-sub" id="celebration-choice"></p>
+</div>
+</div>
+</section>
+
+</main>
+
+<script src="script.js?v=1"></script>
+</body>
+</html>
