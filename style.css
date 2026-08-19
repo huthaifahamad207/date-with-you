@@ -317,18 +317,20 @@ animation: chase-spark-pop 0.6s ease-out forwards;
 45%{ opacity: 1; transform: translate(-50%, -90%) scale(1.3); }
 100%{ opacity: 0; transform: translate(-50%, -120%) scale(0.9); }
 }
-/* Cart: he scoops her up onto the cart, explicit transforms so nothing snaps. */
+/* Cart: he scoops her up into the wagon, explicit transforms so nothing snaps.
+   She scales down (around her own center) so she settles low enough to read
+   as "sitting inside" the wagon body/rim instead of floating above it. */
 .chase-stage.cart .chase-girl{
 left: 46%;
 animation: none;
-transform: translateY(-30px) scale(0.86);
+transform: scale(0.72);
 transition: transform 0.4s ease;
 z-index: 3;
 }
 .chase-stage.cart .chase-boy{
-left: 38%;
+left: 30%;
 animation: none;
-transform: rotate(-8deg);
+transform: scale(0.95) rotate(-8deg);
 transition: left 0.4s ease, transform 0.4s ease;
 z-index: 2;
 }
@@ -514,8 +516,8 @@ box-shadow: 0 8px 16px -8px rgba(74,36,56,0.4);
 background: var(--cream);
 }
 .mini-person img{ width: 100%; height: 100%; object-fit: cover; display: block; }
-.mini-boy{ left: calc(50% - 94px); transform: rotate(-6deg); z-index: 1; }
-.mini-girl{ left: calc(50% - 6px); transform: translateY(-24px) scale(0.94); z-index: 2; }
+.mini-boy{ left: calc(50% - 92px); bottom: 30px; transform: rotate(-6deg); z-index: 1; }
+.mini-girl{ left: calc(50% - 4px); transform: scale(0.82); z-index: 2; }
 .idea-card{
 position: relative;
 overflow: hidden;
