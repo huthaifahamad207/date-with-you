@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -57,9 +57,16 @@ window.__entryOpenedEarly = function(){ return opened; };
      options. Pure photos + CSS transforms -- no sprite art needed. -->
 <div id="story-intro" class="story-intro" hidden>
 <p class="story-intro-caption" id="chase-caption-top">she's making a run for it&hellip;</p>
-<div class="chase-stage" id="chase-stage">
+<div class="chase-stage scene-backdrop" id="chase-stage">
+<svg class="chase-trail" viewBox="0 0 640 230" preserveAspectRatio="none" aria-hidden="true">
+<path d="M10,190 C120,120 220,150 330,90 C420,45 500,70 600,40"></path>
+</svg>
+<span class="chase-trail-heart" style="--d:0.15s; left:20%; bottom:40%;">♡</span>
+<span class="chase-trail-heart" style="--d:0.45s; left:40%; bottom:58%;">♡</span>
+<span class="chase-trail-heart" style="--d:0.75s; left:58%; bottom:45%;">♡</span>
 <div class="chase-group" id="chase-group">
 <div class="cart-shape chase-cart" id="chase-cart" aria-hidden="true">
+<div class="cart-handle"></div>
 <div class="cart-body"></div>
 <div class="cart-wheel cart-wheel-a"></div>
 <div class="cart-wheel cart-wheel-b"></div>
@@ -101,12 +108,37 @@ Let's go on a date. <em>Your pick.</em>
 <section class="ideas">
 <div class="ideas-inner">
 <p class="eyebrow reveal">choose our next date</p>
-<h2 class="ideas-title reveal">What sounds fun to you?</h2>
+<h2 class="ideas-title script reveal">Choose Your Perfect Date <span aria-hidden="true">♡</span></h2>
 
-<!-- Persistent little illustration: she's still in the cart while the
+<div class="ideas-board reveal">
+<div class="ideas-col ideas-col-left">
+<button class="idea-card" style="--card-bg:#EFB27C" data-idea="Lunch / Dinner" data-emoji="🍽️">
+<span class="idea-emoji">🍽️</span>
+<span class="idea-name">Lunch / Dinner</span>
+</button>
+<button class="idea-card" style="--card-bg:#BBA6DD" data-idea="Movie" data-emoji="🎬">
+<span class="idea-emoji">🎬</span>
+<span class="idea-name">Movie</span>
+</button>
+<button class="idea-card" style="--card-bg:#A9CB8E" data-idea="Horseback Riding" data-emoji="🏇">
+<span class="idea-emoji">🏇</span>
+<span class="idea-name">Horseback Riding</span>
+</button>
+<button class="idea-card" style="--card-bg:#DCBB8C" data-idea="Coffee" data-emoji="☕">
+<span class="idea-emoji">☕</span>
+<span class="idea-name">Coffee</span>
+</button>
+<button class="idea-card" style="--card-bg:#EA92A8" data-idea="Romantic Date" data-emoji="🌹">
+<span class="idea-emoji">🌹</span>
+<span class="idea-name">Romantic Date</span>
+</button>
+</div>
+
+<!-- Persistent little illustration: she's still in the wagon while the
      options wait around her. Static, no motion -- same two photos. -->
-<div class="cart-illustration reveal" aria-hidden="true">
+<div class="ideas-scene scene-backdrop" aria-hidden="true">
 <div class="cart-shape cart-shape-mini">
+<div class="cart-handle"></div>
 <div class="cart-body"></div>
 <div class="cart-wheel cart-wheel-a"></div>
 <div class="cart-wheel cart-wheel-b"></div>
@@ -115,48 +147,31 @@ Let's go on a date. <em>Your pick.</em>
 <div class="mini-person mini-girl"><img src="images/girl.jpg" alt=""></div>
 </div>
 
-<div class="card-grid reveal" id="card-grid">
-<button class="idea-card" data-idea="Lunch / Dinner" data-emoji="🍽️">
-<span class="idea-emoji">🍽️</span>
-<span class="idea-name">Lunch / Dinner</span>
-</button>
-<button class="idea-card" data-idea="Movie" data-emoji="🎬">
-<span class="idea-emoji">🎬</span>
-<span class="idea-name">Movie</span>
-</button>
-<button class="idea-card" data-idea="Horseback Riding" data-emoji="🏇">
-<span class="idea-emoji">🏇</span>
-<span class="idea-name">Horseback Riding</span>
-</button>
-<button class="idea-card" data-idea="Coffee" data-emoji="☕">
-<span class="idea-emoji">☕</span>
-<span class="idea-name">Coffee</span>
-</button>
-<button class="idea-card" data-idea="Romantic Date" data-emoji="🌹">
-<span class="idea-emoji">🌹</span>
-<span class="idea-name">Romantic Date</span>
-</button>
-<button class="idea-card" data-idea="Games" data-emoji="🎮">
+<div class="ideas-col ideas-col-right">
+<button class="idea-card" style="--card-bg:#8FC0E3" data-idea="Games" data-emoji="🎮">
 <span class="idea-emoji">🎮</span>
 <span class="idea-name">Games</span>
 </button>
-<button class="idea-card" data-idea="Outdoor Activity" data-emoji="🌳">
+<button class="idea-card" style="--card-bg:#98CB96" data-idea="Outdoor Activity" data-emoji="🌳">
 <span class="idea-emoji">🌳</span>
 <span class="idea-name">Outdoor Activity</span>
 </button>
-<button class="idea-card" data-idea="Trip / Travel" data-emoji="✈️">
+<button class="idea-card" style="--card-bg:#8AC2E0" data-idea="Trip / Travel" data-emoji="✈️">
 <span class="idea-emoji">✈️</span>
 <span class="idea-name">Trip / Travel</span>
 </button>
-<button class="idea-card" data-idea="Surprise" data-emoji="🎁">
+<button class="idea-card" style="--card-bg:#F0AE73" data-idea="Surprise" data-emoji="🎁">
 <span class="idea-emoji">🎁</span>
 <span class="idea-name">Surprise</span>
 </button>
-<button class="idea-card" data-idea="Other date ideas" data-emoji="❤️">
+<button class="idea-card" style="--card-bg:#E68B96" data-idea="Other date ideas" data-emoji="❤️">
 <span class="idea-emoji">❤️</span>
 <span class="idea-name">Other date ideas</span>
 </button>
 </div>
+</div>
+
+<p class="script ideas-footer reveal">♡ Let's make memories together ♡</p>
 
 <div class="decoy-row reveal">
 <button id="btn-decoy" class="btn-decoy">none of these, surprise me</button>
